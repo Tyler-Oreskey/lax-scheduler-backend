@@ -1,12 +1,16 @@
 const router = require("express").Router();
+const { game } = require("../../database");
 const Game = require("../../routes/game");
 
-const game = new Game();
+const tablename = game.getTablename();
+const colTypes = game.getColTypes();
+
+const newGame = new Game(tablename, colTypes);
 
 // common routes
-router.get("/getAll", game.getAll);
-router.get("/getByID/:id", game.getByID);
-router.post("/create", game.create);
-router.patch("/updateByID/:id", game.updateByID);
+router.get("/getAll", newGame.getAll);
+router.get("/getByID/:id", newGame.getByID);
+router.post("/create", newGame.create);
+router.patch("/updateByID/:id", newGame.updateByID);
 
 module.exports = router;
