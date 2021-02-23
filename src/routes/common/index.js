@@ -4,10 +4,7 @@ const { ErrorHandler } = require("../../middleware/error");
 
 class CommonRoutes {
     constructor(tablename, validationRules) {
-        this.state = {
-            tablename: tablename,
-            validationRules: validationRules
-        }
+        this.state = { tablename, validationRules };
     }
 
     getAll = async (req, res, next) => {

@@ -1,15 +1,19 @@
 const router = require("express").Router();
+const { user } = require("../../database");
 const User = require("../../routes/user");
 
-const user = new User();
+const tablename = user.getTablename();
+const colTypes = user.getColTypes();
+
+const newUser = new User(tablename, colTypes);
 
 // common routes
-router.get("/getAll", user.getAll);
-router.get("/getByID/:id", user.getByID);
-router.post("/create", user.create);
-router.patch("/updateByID/:id", user.updateByID);
+router.get("/getAll", newUser.getAll);
+router.get("/getByID/:id", newUser.getByID);
+router.post("/create", newUser.create);
+router.patch("/updateByID/:id", newUser.updateByID);
 
 // locaL routes
-router.get("/getGamesByUserID/:id", user.getGamesByUserID);
+router.get("/getGamesByUserID/:id", newUser.getGamesByUserID);
 
 module.exports = router;
