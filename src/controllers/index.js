@@ -1,7 +1,6 @@
-const games = require("./games");
+const router = require("express").Router();
 
-module.exports = (router) => {
-    return [
-        router.use("/games", games(router))
-    ]
-}
+router.use("/games", require("./games"));
+router.use("/users", require("./users"));
+
+module.exports = router;

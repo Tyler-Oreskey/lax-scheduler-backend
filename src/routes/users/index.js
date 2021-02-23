@@ -1,12 +1,12 @@
-const queries = require("../../database/games");
+const queries = require("../../database/users");
 const { ErrorHandler } = require("../../middleware/error");
 const validation = require("../../validation");
 
 module.exports = {
     getAll: async (req, res, next) => {
         try {
-            const allGames = await queries.getAll();
-            return res.status(200).json(allGames);
+            const allUsers = await queries.getAll();
+            return res.status(200).json(allUsers);
         } catch (error) {
             next(error);
         }
@@ -20,8 +20,8 @@ module.exports = {
                 throw new ErrorHandler(400, "Invalid ID provided!");
             }
 
-            const singleGame = await queries.getByID(id);
-            return res.status(200).json(singleGame);
+            const singleUser = await queries.getByID(id);
+            return res.status(200).json(singleUser);
         } catch (error) {
             next(error);
         }
@@ -30,10 +30,11 @@ module.exports = {
         try {
             const { body } = req;
             const isValidBody = validation.validateObjectTypes(body, {
-                name: String,
-                location: String,
-                start_date: String,
-                end_date: String
+                first_name: String,
+                last_name: String,
+                email: String,
+                is_email_verified: Boolean,
+                receive_emails: Boolean
             }, lengthStrict = true);
 
             if (!isValidBody) {
@@ -56,10 +57,11 @@ module.exports = {
             }
 
             const isValidBody = validation.validateObjectTypes(body, {
-                name: String,
-                location: String,
-                start_date: String,
-                end_date: String
+                first_name: String,
+                last_name: String,
+                email: String,
+                is_email_verified: Boolean,
+                receive_emails: Boolean                
             });
 
             if (!isValidBody) {
@@ -87,4 +89,4 @@ module.exports = {
             next(error);
         }
     }
-};
+}

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const route = require("../../routes/games");
+const route = require("../../routes/users");
 
 router.get("/getAll", route.getAll);
 router.get("/getByID/:id", route.getByID);
