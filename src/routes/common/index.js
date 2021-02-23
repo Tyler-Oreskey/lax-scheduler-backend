@@ -1,28 +1,19 @@
-const queries = require("../../database/common");
+const { common } = require("../../database");
 const validation = require("../../validation");
 const { ErrorHandler } = require("../../middleware/error");
 
 class CommonRoutes {
     constructor(tablename, validationRules) {
         this.state = {
-            id: 0,
-            body: {},
             tablename: tablename,
-            validationRules: validationRules,
-            isValidID: false,
-            isValidBody: false,
-            lengthStrict: false,
-            idErrorMessage: "Invalid ID provided!",
-            requestBodyErrorMessage: "Invalid request body!",
-            successMessage: "Success!",
-            result: null
+            validationRules: validationRules
         }
     }
 
     getAll = async (req, res, next) => {
         try {
-            this.state.result = await queries.getAll(this.state.tablename);
-            return res.status(200).json(this.state.result);
+            const result = await common.getAll(this.state.tablename);
+            return res.status(200).json(result);
         } catch (error) {
             next(error);
         }
@@ -30,15 +21,14 @@ class CommonRoutes {
 
     getByID = async (req, res, next) => {
         try {
-            this.state.id = req.params.id;
-            this.state.isValidID = validation.validateNumber(this.state.id);
+            const isValidID = validation.validateNumber(req.params.id);
 
-            if (!this.state.isValidID) {
-                throw new ErrorHandler(400, this.state.idErrorMessage);
+            if (!isValidID) {
+                throw new ErrorHandler(400, "Invalid ID provided!");
             }
 
-            this.state.result = await queries.getByID(this.state.tablename, this.state.id);
-            return res.status(200).json(this.state.result);
+            const result = await common.getByID(this.state.tablename, req.params.id);
+            return res.status(200).json(result);
         } catch (error) {
             next(error);
         }
@@ -46,17 +36,14 @@ class CommonRoutes {
 
     create = async (req, res, next) => {
         try {
-            this.state.body = req.body;
-            this.state.lengthStrict = true;
-            this.state.isValidBody = validation
-                .validateObjectTypes(this.state.body, this.state.validationRules, this.state.lengthStrict);
+            const isValidBody = validation.validateObjectTypes(req.body, this.state.validationRules, true);
 
-            if (!this.state.isValidBody) {
-                throw new ErrorHandler(400, this.state.requestBodyErrorMessage);
+            if (!isValidBody) {
+                throw new ErrorHandler(400, "Invalid request body!");
             }
 
-            await queries.create(this.state.tablename, this.state.body);
-            return res.status(200).json({ message: this.state.successMessage });
+            await common.create(this.state.tablename, req.body);
+            return res.status(200).json({ message: "Success!" });
         } catch (error) {
             next(error);
         }
@@ -64,39 +51,20 @@ class CommonRoutes {
 
     updateByID = async (req, res, next) => {
         try {
-            this.state.body = req.body;
-            this.state.id = req.params.id;
-            this.state.isValidID = validation.validateNumber(this.state.id);
+            const isValidID = validation.validateNumber(req.params.id);
 
-            if (!this.state.isValidID) {
-                throw new ErrorHandler(400, this.state.idErrorMessage);
+            if (!isValidID) {
+                throw new ErrorHandler(400, "Invalid ID provided!");
             }
 
-            this.state.isValidBody = validation
-                .validateObjectTypes(this.state.body, this.state.validationRules, this.state.lengthStrict);
+            const isValidBody = validation.validateObjectTypes(req.body, this.state.validationRules, false);
 
-            if (!this.state.isValidBody) {
-                throw new ErrorHandler(400, this.state.requestBodyErrorMessage);
+            if (!isValidBody) {
+                throw new ErrorHandler(400, "Invalid request body!");
             }
 
-            await queries.updateByID(this.state.tablename, this.state.id, this.state.body);
-            return res.status(200).json({ message: this.state.successMessage });
-        } catch (error) {
-            next(error);
-        }
-    };
-
-    deleteByID = async (req, res, next) => {
-        try {
-            this.state.id = req.params.id;
-            this.state.isValidID = validation.validateNumber(this.state.id);
-
-            if (!this.state.isValidID) {
-                throw new ErrorHandler(400, this.state.idErrorMessage);
-            }
-
-            await queries.deleteByID(this.state.tablename, this.state.id);
-            return res.status(200).json({ message: this.state.successMessage });
+            await common.updateByID(this.state.tablename, req.params.id, req.body);
+            return res.status(200).json({ message: "Success!" });
         } catch (error) {
             next(error);
         }
