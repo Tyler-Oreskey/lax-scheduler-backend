@@ -5,7 +5,6 @@ const validateString = (string) => typeof string === "string";
 const validateBoolean = (boolean) => boolean == "true" || boolean == "false" || boolean == true || boolean == false;
 
 const validateObjectTypes = (object, objectTypes, lengthStrict) => {
-
     if (lengthStrict) {
         if (Object.keys(object).length !== Object.keys(objectTypes).length) {
             return false;
