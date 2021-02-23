@@ -2,6 +2,8 @@ const validateNumber = (number) => !isNaN(number);
 
 const validateString = (string) => typeof string === "string";
 
+const validateBoolean = (boolean) => boolean == "true" || boolean == "false" || boolean == true || boolean == false;
+
 const validateObjectTypes = (object, objectTypes, lengthStrict) => {
 
     if (lengthStrict) {
@@ -14,6 +16,8 @@ const validateObjectTypes = (object, objectTypes, lengthStrict) => {
         if (objectTypes[key] === String && !validateString(object[key])) {
             return false;
         } else if (objectTypes[key] === Number && !validateNumber(object[key])) {
+            return false;
+        } else if (objectTypes[key] === Boolean && !validateBoolean(object[key])) {
             return false;
         }
     }
