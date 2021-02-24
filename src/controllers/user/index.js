@@ -15,5 +15,6 @@ router.patch("/updateByID/:id", newUser.updateByID);
 
 // locaL routes
 router.get("/getGamesByUserID/:id", newUser.getGamesByUserID);
+router.post("/login", newUser.login);
 
 module.exports = router;

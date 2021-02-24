@@ -4,6 +4,11 @@ const validateString = (string) => typeof string === "string";
 
 const validateBoolean = (boolean) => boolean == "true" || boolean == "false" || boolean == true || boolean == false;
 
+const validateEmail = (email) => {
+    const emailRegex = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    return emailRegex.test(email);
+};
+
 const validateObjectTypes = (object, objectTypes, lengthStrict) => {
     if (lengthStrict) {
         if (Object.keys(object).length !== Object.keys(objectTypes).length) {
@@ -25,5 +30,8 @@ const validateObjectTypes = (object, objectTypes, lengthStrict) => {
 
 module.exports = {
     validateNumber,
+    validateString,
+    validateBoolean,
+    validateEmail,
     validateObjectTypes
 };
