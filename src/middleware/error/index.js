@@ -1,27 +1,27 @@
 class ErrorHandler extends Error {
-    constructor(statusCode, message) {
-      super();
-      this.statusCode = statusCode || 404;
-      this.message = message || 'An Error Occurred!';
-    }
-  };
-  
-  const handleError = (err, res) => {
-    let { statusCode, message } = err;
+  constructor(statusCode, message) {
+    super();
+    this.statusCode = statusCode || 404;
+    this.message = message || 'An Error Occurred!';
+  }
+}
 
-    if (statusCode === undefined) {
-      statusCode = 404;
-    }
+const handleError = (err, res) => {
+  let { statusCode, message } = err;
 
-    if (message === undefined) {
-      message = 'An Error Occurred!';
-    }
+  if (statusCode === undefined) {
+    statusCode = 404;
+  }
 
-    return res.status(statusCode).json({
-      status: 'error',
-      statusCode,
-      message
-    });
-  };
-  
-  module.exports = { ErrorHandler, handleError };
+  if (message === undefined) {
+    message = 'An Error Occurred!';
+  }
+
+  return res.status(statusCode).json({
+    status: 'error',
+    statusCode,
+    message,
+  });
+};
+
+module.exports = { ErrorHandler, handleError };

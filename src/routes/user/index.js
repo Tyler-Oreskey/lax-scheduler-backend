@@ -5,8 +5,10 @@ const validation = require("../../validation");
 const { generateHashedPassword, compareHashedPassword } = require("../../middleware/auth");
 
 class User extends CommonRoutes {
-    constructor(...args) {
-        super(...args);
+    constructor(tablename, colTypes) {
+        super(tablename, colTypes);
+        this.tablename = tablename;
+        this.colTypes = colTypes;
     }
 
     getGamesByUserID = async (req, res, next) => {
@@ -26,7 +28,7 @@ class User extends CommonRoutes {
 
     create = async (req, res, next) => {
         try {
-            const isValidBody = validation.validateObjectTypes(req.body, this.state.validationRules, true);
+            const isValidBody = validation.validateObjectTypes(req.body, this.validationRules, true);
 
             if (!isValidBody) {
                 throw new ErrorHandler(400, "Invalid request body!");

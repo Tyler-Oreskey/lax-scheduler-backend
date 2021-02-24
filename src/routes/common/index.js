@@ -3,13 +3,14 @@ const validation = require("../../validation");
 const { ErrorHandler } = require("../../middleware/error");
 
 class CommonRoutes {
-    constructor(tablename, validationRules) {
-        this.state = { tablename, validationRules };
-    }
+  constructor(tablename, validationRules) {
+    this.tablename = tablename;
+    this.validationRules = validationRules;
+  }
 
     getAll = async (req, res, next) => {
         try {
-            const result = await common.getAll(this.state.tablename);
+            const result = await common.getAll(this.tablename);
             return res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -24,7 +25,7 @@ class CommonRoutes {
                 throw new ErrorHandler(400, "Invalid ID provided!");
             }
 
-            const result = await common.getByID(this.state.tablename, req.params.id);
+            const result = await common.getByID(this.tablename, req.params.id);
             return res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -33,13 +34,13 @@ class CommonRoutes {
 
     create = async (req, res, next) => {
         try {
-            const isValidBody = validation.validateObjectTypes(req.body, this.state.validationRules, true);
+            const isValidBody = validation.validateObjectTypes(req.body, this.validationRules, true);
 
             if (!isValidBody) {
                 throw new ErrorHandler(400, "Invalid request body!");
             }
 
-            await common.create(this.state.tablename, req.body);
+            await common.create(this.tablename, req.body);
             return res.status(200).json({ message: "Success!" });
         } catch (error) {
             next(error);
@@ -54,13 +55,13 @@ class CommonRoutes {
                 throw new ErrorHandler(400, "Invalid ID provided!");
             }
 
-            const isValidBody = validation.validateObjectTypes(req.body, this.state.validationRules, false);
+            const isValidBody = validation.validateObjectTypes(req.body, this.validationRules, false);
 
             if (!isValidBody) {
                 throw new ErrorHandler(400, "Invalid request body!");
             }
 
-            await common.updateByID(this.state.tablename, req.params.id, req.body);
+            await common.updateByID(this.tablename, req.params.id, req.body);
             return res.status(200).json({ message: "Success!" });
         } catch (error) {
             next(error);
