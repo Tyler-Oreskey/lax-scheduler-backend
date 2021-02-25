@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const { usersGamesController } = require('../../controllers');
 
-router.get('/getGamesByUserID/:id', usersGamesController.getGamesByUserID);
-router.post('/addUserToGame', usersGamesController.addUserToGame);
-router.delete('/removeUserFromGame', usersGamesController.removeUserFromGame);
+router.get('/:user_id', usersGamesController.getByID);
+router.post('/:game_id', usersGamesController.create);
+router.delete('/:game_id', usersGamesController.delete);
 
 module.exports = router;

@@ -9,7 +9,7 @@ const {
 const validationRules = userModel.getColTypes();
 
 module.exports = {
-  getAll: async (req, res, next) => {
+  get: async (req, res, next) => {
     try {
       const result = await userModel.getAll();
       return res.status(200).json(result);
@@ -52,7 +52,7 @@ module.exports = {
       next(error);
     }
   },
-  updateByID: async (req, res, next) => {
+  update: async (req, res, next) => {
     try {
       const isValidID = validation.validateNumber(req.params.id);
 

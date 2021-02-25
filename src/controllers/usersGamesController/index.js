@@ -5,7 +5,7 @@ const validation = require('../../validation');
 const validationRules = usersGamesModel.getColTypes();
 
 module.exports = {
-  getGamesByUserID: async (req, res, next) => {
+  getByID: async (req, res, next) => {
     try {
       const isValidID = validation.validateNumber(req.params.user_id);
 
@@ -19,10 +19,12 @@ module.exports = {
       next(error);
     }
   },
-  addUserToGame: async (req, res, next) => {
+  create: async (req, res, next) => {
     try {
+      const ids = { ...req.params, ...req.body };
+
       const isValidBody = validation.validateObjectTypes(
-        req.body,
+        ids,
         validationRules,
         true
       );
@@ -31,16 +33,18 @@ module.exports = {
         throw new ErrorHandler(400, 'Invalid request body!');
       }
 
-      await usersGamesModel.addUserToGame(req.body);
+      await usersGamesModel.addUserToGame(ids);
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
       next(error);
     }
   },
-  removeUserFromGame: async (req, res, next) => {
+  delete: async (req, res, next) => {
     try {
+      const ids = { ...req.params, ...req.body };
+
       const isValidBody = validation.validateObjectTypes(
-        req.body,
+        ids,
         validationRules,
         true
       );
@@ -49,7 +53,7 @@ module.exports = {
         throw new ErrorHandler(400, 'Invalid request body!');
       }
 
-      await usersGamesModel.removeUserFromGame(req.body);
+      await usersGamesModel.removeUserFromGame(ids);
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
       next(error);
