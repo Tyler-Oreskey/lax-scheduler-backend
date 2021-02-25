@@ -1,16 +1,21 @@
-const express = require("express");
+const express = require('express');
+const bodyParser = require('body-parser');
+
+const config = require('./src/config');
+const { handleError } = require('./src/middleware/error');
+const bootstrap = require('./src/bootstrap');
+
 const app = express();
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const config = require("./src/config");
-const controllers = require("./src/controllers");
-const { handleError } = require("./src/middleware/error");
+const router = express.Router();
+
+// const cors = require('cors');
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use("/api", controllers);
+bootstrap(app, router);
+
 app.use((err, req, res, next) => handleError(err, res));
 // app.use(cors({ origin: config.origin }));
 
-app.get("/health", (req, res) => res.send("OK!"));
-app.listen(config.port, () => console.log(`App listeing on port ${config.port}`))
+app.get('/health', (req, res) => res.send('OK!'));
+app.listen(config.port);
