@@ -4,7 +4,10 @@ const knex = require('knex')(database);
 const tablename = 'users';
 
 module.exports = {
+  getAll: () => knex(tablename).select('*'),
+  getByID: (id) => knex(tablename).where({ id }),
   create: (body) => knex(tablename).insert(body),
+  updateByID: (id, body) => knex(tablename).where({ id }).update(body),
   getByEmailNoPass: (email) =>
     knex(tablename)
       .first('first_name', 'last_name', 'email', 'is_email_verified')

@@ -1,23 +1,19 @@
-const { common } = require("../../database");
-const validation = require("../../validation");
+const { gameModel } = require('../../models');
 const { ErrorHandler } = require("../../middleware/error");
+const validation = require("../../validation");
 
-class CommonRoutes {
-  constructor(tablename, validationRules) {
-    this.tablename = tablename;
-    this.validationRules = validationRules;
-  }
+const validationRules = gameModel.getColTypes();
 
-    getAll = async (req, res, next) => {
+module.exports = {
+    getAll: async (req, res, next) => {
         try {
-            const result = await common.getAll(this.tablename);
+            const result = await gameModel.getAll();
             return res.status(200).json(result);
         } catch (error) {
             next(error);
         }
-    };
-
-    getByID = async (req, res, next) => {
+    },
+    getByID: async (req, res, next) => {
         try {
             const isValidID = validation.validateNumber(req.params.id);
 
@@ -25,29 +21,27 @@ class CommonRoutes {
                 throw new ErrorHandler(400, "Invalid ID provided!");
             }
 
-            const result = await common.getByID(this.tablename, req.params.id);
+            const result = await gameModel.getByID(req.params.id);
             return res.status(200).json(result);
         } catch (error) {
             next(error);
         }
-    };
-
-    create = async (req, res, next) => {
+    },
+    create: async (req, res, next) => {
         try {
-            const isValidBody = validation.validateObjectTypes(req.body, this.validationRules, true);
+            const isValidBody = validation.validateObjectTypes(req.body, validationRules, true);
 
             if (!isValidBody) {
                 throw new ErrorHandler(400, "Invalid request body!");
             }
 
-            await common.create(this.tablename, req.body);
+            await gameModel.create(req.body);
             return res.status(200).json({ message: "Success!" });
         } catch (error) {
             next(error);
         }
-    };
-
-    updateByID = async (req, res, next) => {
+    },
+    updateByID: async (req, res, next) => {
         try {
             const isValidID = validation.validateNumber(req.params.id);
 
@@ -55,18 +49,16 @@ class CommonRoutes {
                 throw new ErrorHandler(400, "Invalid ID provided!");
             }
 
-            const isValidBody = validation.validateObjectTypes(req.body, this.validationRules, false);
+            const isValidBody = validation.validateObjectTypes(req.body, validationRules, false);
 
             if (!isValidBody) {
                 throw new ErrorHandler(400, "Invalid request body!");
             }
 
-            await common.updateByID(this.tablename, req.params.id, req.body);
+            await gameModel.updateByID(req.params.id, req.body);
             return res.status(200).json({ message: "Success!" });
         } catch (error) {
             next(error);
         }
-    };
-}
-
-module.exports = CommonRoutes;
+    },
+};

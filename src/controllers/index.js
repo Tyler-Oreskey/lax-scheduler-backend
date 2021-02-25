@@ -1,6 +1,9 @@
-const router = require('express').Router();
+const userController = require('./userController');
+const gameController = require('./gameController');
+const usersGamesController = require('./usersGamesController');
 
-router.use('/game', require('./game'));
-router.use('/user', require('./user'));
-
-module.exports = router;
+module.exports = {
+  userController,
+  gameController,
+  usersGamesController,
+};
