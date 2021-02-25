@@ -20,15 +20,18 @@ const validateObjectTypes = (object, objectTypes, lengthStrict) => {
     }
   }
 
-  for (key in object) {
+  for (const key of Object.keys(object)) {
     if (objectTypes[key] === String && !validateString(object[key])) {
       return false;
     } else if (objectTypes[key] === Number && !validateNumber(object[key])) {
       return false;
     } else if (objectTypes[key] === Boolean && !validateBoolean(object[key])) {
       return false;
+    } else if (key === 'email' && !validateEmail(object[key])) {
+      return false;
     }
   }
+
   return true;
 };
 
