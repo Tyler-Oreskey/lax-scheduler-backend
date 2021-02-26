@@ -20,7 +20,6 @@ module.exports = {
     last_name: String,
     email: String,
     password: String,
-    is_email_verified: Boolean,
     receive_emails: Boolean,
   }),
 };
