@@ -2,7 +2,7 @@ require('dotenv').config();
 
 module.exports = {
   port: process.env.PORT || 8000,
-  origin: process.env.ORIGIN || 'localhost:3000',
+  origin: process.env.ORIGIN || 'http://localhost:3000',
   database: {
     client: process.env.DATABASE_CLIENT || 'pg',
     connection: {

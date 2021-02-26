@@ -43,6 +43,12 @@ module.exports = {
         throw new ErrorHandler(400, 'Invalid request body!');
       }
 
+      const isAlreadyUser = await userModel.getByEmailNoPass(req.body.email);
+
+      if (isAlreadyUser) {
+        throw new ErrorHandler(400, 'There is already a user by that email!');
+      }
+
       const { password } = req.body;
       const hashedPassword = await generateHashedPassword(password);
 
@@ -85,6 +91,11 @@ module.exports = {
       }
 
       const foundUser = await userModel.getByEmailNoPass(req.body.email);
+
+      if (!foundUser) {
+        throw new ErrorHandler(400, 'User does not exist!');
+      }
+
       const foundPassword = await userModel.getPasswordByEmail(req.body.email);
       const isCorrectPassword = await compareHashedPassword(
         req.body.password,
