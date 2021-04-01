@@ -1,12 +1,7 @@
 const { userModel } = require('../../models');
 const { ErrorHandler } = require('../../middleware/error');
 const validation = require('../../validation');
-const {
-  generateHashedPassword,
-  compareHashedPassword,
-} = require('../../middleware/auth');
-
-const JWT = require('../../middleware/auth/jwt');
+const { JWT, Bcrypt } = require('../../middleware/auth');
 const validationRules = userModel.getColTypes();
 
 module.exports = {
@@ -51,8 +46,7 @@ module.exports = {
       }
 
       const { password } = req.body;
-      const hashedPassword = await generateHashedPassword(password);
-
+      const hashedPassword = await new Bcrypt().generatePassword(password);
       await userModel.create({ ...req.body, password: hashedPassword });
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
@@ -98,7 +92,8 @@ module.exports = {
       }
 
       const foundPassword = await userModel.getPasswordByEmail(req.body.email);
-      const isCorrectPassword = await compareHashedPassword(
+
+      const isCorrectPassword = await new Bcrypt().comparePassword(
         req.body.password,
         foundPassword.password
       );

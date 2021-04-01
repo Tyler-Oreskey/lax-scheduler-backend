@@ -16,6 +16,7 @@ class Options {
     this.header = null;
     this.options = null;
   }
+  // create options object and make expiration optional
   createOptions(options) {
     if (Object.keys(options).length === 0) {
       return null;
@@ -34,6 +35,7 @@ class Options {
   }
 }
 
+// give secret
 class Secret {
   constructor() {
     this.secret = jwt.secret;
@@ -47,6 +49,7 @@ class JWT {
     this.secret = null;
     this.options = null;
   }
+  // create jwt
   createToken(payload, options) {
     if (!payload || !options) {
       return null;
