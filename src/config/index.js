@@ -12,4 +12,8 @@ module.exports = {
       database: process.env.DATABASE_PATH || 'lax_scheduler',
     },
   },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    exp: process.env.JWT_EXP || '7d',
+  },
 };

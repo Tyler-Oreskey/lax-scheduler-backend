@@ -10,7 +10,7 @@ module.exports = {
   updateByID: (id, body) => knex(tablename).where({ id }).update(body),
   getByEmailNoPass: (email) =>
     knex(tablename)
-      .first('first_name', 'last_name', 'email', 'is_email_verified')
+      .first('id', 'first_name', 'last_name', 'email', 'is_email_verified')
       .where({ email }),
   getPasswordByEmail: (email) =>
     knex(tablename).first('password').where({ email }),
@@ -20,6 +20,7 @@ module.exports = {
     last_name: String,
     email: String,
     password: String,
+    is_email_verified: Boolean,
     receive_emails: Boolean,
   }),
 };

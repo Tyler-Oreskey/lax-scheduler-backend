@@ -1,11 +1,7 @@
 const { userModel } = require('../../models');
 const { ErrorHandler } = require('../../middleware/error');
 const validation = require('../../validation');
-const {
-  generateHashedPassword,
-  compareHashedPassword,
-} = require('../../middleware/auth');
-
+const { JWT, Bcrypt } = require('../../middleware/auth');
 const validationRules = userModel.getColTypes();
 
 module.exports = {
@@ -50,8 +46,7 @@ module.exports = {
       }
 
       const { password } = req.body;
-      const hashedPassword = await generateHashedPassword(password);
-
+      const hashedPassword = await new Bcrypt().generatePassword(password);
       await userModel.create({ ...req.body, password: hashedPassword });
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
@@ -97,7 +92,8 @@ module.exports = {
       }
 
       const foundPassword = await userModel.getPasswordByEmail(req.body.email);
-      const isCorrectPassword = await compareHashedPassword(
+
+      const isCorrectPassword = await new Bcrypt().comparePassword(
         req.body.password,
         foundPassword.password
       );
@@ -106,7 +102,16 @@ module.exports = {
         throw new ErrorHandler(400, 'Invalid user!');
       }
 
-      return res.status(200).json(foundUser);
+      const jwtToken = new JWT().createToken(foundUser, {
+        expiresIn: '7d',
+        subject: `${foundUser.id}`,
+      });
+
+      if (!jwtToken) {
+        throw new ErrorHandler(400, 'An error occured!');
+      }
+
+      return res.status(200).json(jwtToken);
     } catch (error) {
       next(error);
     }
