@@ -6,6 +6,7 @@ const {
   compareHashedPassword,
 } = require('../../middleware/auth');
 
+const JWT = require('../../middleware/auth/jwt');
 const validationRules = userModel.getColTypes();
 
 module.exports = {
@@ -106,7 +107,16 @@ module.exports = {
         throw new ErrorHandler(400, 'Invalid user!');
       }
 
-      return res.status(200).json(foundUser);
+      const jwtToken = new JWT().createToken(foundUser, {
+        expiresIn: '7d',
+        subject: `${foundUser.id}`,
+      });
+
+      if (!jwtToken) {
+        throw new ErrorHandler(400, 'An error occured!');
+      }
+
+      return res.status(200).json(jwtToken);
     } catch (error) {
       next(error);
     }
