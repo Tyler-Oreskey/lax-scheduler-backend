@@ -1,5 +1,6 @@
-const { sign } = require('jsonwebtoken');
+const { sign, verify } = require('jsonwebtoken');
 const { jwt } = require('../../config');
+const { ErrorHandler } = require('../error');
 
 class Options {
   // do not pass these vals into payload, only pass these into options argument
@@ -63,6 +64,21 @@ class JWT {
     }
     this.token = sign(this.payload, this.secret, this.options);
     return this.token;
+  }
+  authenticated(req, res, next) {
+    try {
+      if (!req.headers.authorization) {
+        throw new ErrorHandler(401, 'Missing required data!');
+      }
+      this.token = req.headers.authorization;
+      this.secret = new Secret().secret;
+      verify(this.token, this.secret);
+      next();
+    } catch (error) {
+      error.message = 'Not authenticated!';
+      error.statusCode = 401;
+      next(error);
+    }
   }
 }
 
