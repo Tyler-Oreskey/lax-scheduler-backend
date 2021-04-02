@@ -1,9 +1,9 @@
-const userModel = require('./userModel');
-const gameModel = require('./gameModel');
-const usersGamesModel = require('./usersGamesModel');
+const UserModel = require('./userModel');
+const GameModel = require('./gameModel');
+const UsersGamesModel = require('./usersGamesModel');
 
 module.exports = {
-  userModel,
-  gameModel,
-  usersGamesModel,
+  UserModel,
+  GameModel,
+  UsersGamesModel,
 };
