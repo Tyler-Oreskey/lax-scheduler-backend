@@ -1,26 +1,45 @@
 const { database } = require('../../config');
 const knex = require('knex')(database);
 
-const tablename = 'users';
-
-module.exports = {
-  getAll: () => knex(tablename).select('*'),
-  getByID: (id) => knex(tablename).where({ id }),
-  create: (body) => knex(tablename).insert(body),
-  updateByID: (id, body) => knex(tablename).where({ id }).update(body),
-  getByEmailNoPass: (email) =>
-    knex(tablename)
+class UserModel {
+  constructor() {
+    this.colTypes = null;
+    this.tablename = 'users';
+    this.result = null;
+  }
+  getColTypes() {
+    this.colTypes = {
+      first_name: String,
+      last_name: String,
+      email: String,
+      password: String,
+      is_email_verified: Boolean,
+      receive_emails: Boolean,
+    };
+    return this.colTypes;
+  }
+  getByID(id) {
+    this.result = knex(this.tablename).where({ id });
+    return this.result;
+  }
+  create(body) {
+    this.result = knex(this.tablename).insert(body);
+    return this.result;
+  }
+  updateByID(id, body) {
+    this.result = knex(this.tablename).where({ id }).update(body);
+    return this.result;
+  }
+  getByEmailNoPass(email) {
+    this.result = knex(this.tablename)
       .first('id', 'first_name', 'last_name', 'email', 'is_email_verified')
-      .where({ email }),
-  getPasswordByEmail: (email) =>
-    knex(tablename).first('password').where({ email }),
-  getTablename: () => tablename,
-  getColTypes: () => ({
-    first_name: String,
-    last_name: String,
-    email: String,
-    password: String,
-    is_email_verified: Boolean,
-    receive_emails: Boolean,
-  }),
-};
+      .where({ email });
+    return this.result;
+  }
+  getPasswordByEmail(email) {
+    this.result = knex(this.tablename).first('password').where({ email });
+    return this.result;
+  }
+}
+
+module.exports = UserModel;

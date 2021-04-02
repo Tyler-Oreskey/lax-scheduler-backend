@@ -1,13 +1,12 @@
-const { gameModel } = require('../../models');
+const { GameModel } = require('../../models');
 const { ErrorHandler } = require('../../middleware/error');
 const validation = require('../../validation');
-
-const validationRules = gameModel.getColTypes();
+const validationRules = new GameModel().getColTypes();
 
 module.exports = {
-  get: async (req, res, next) => {
+  getAll: async (req, res, next) => {
     try {
-      const result = await gameModel.getAll();
+      const result = await new GameModel().getAll();
       return res.status(200).json(result);
     } catch (error) {
       next(error);
@@ -16,12 +15,10 @@ module.exports = {
   getByID: async (req, res, next) => {
     try {
       const isValidID = validation.validateNumber(req.params.id);
-
       if (!isValidID) {
         throw new ErrorHandler(400, 'Invalid ID provided!');
       }
-
-      const result = await gameModel.getByID(req.params.id);
+      const result = await new GameModel().getByID(req.params.id);
       return res.status(200).json(result);
     } catch (error) {
       next(error);
@@ -34,36 +31,30 @@ module.exports = {
         validationRules,
         true
       );
-
       if (!isValidBody) {
         throw new ErrorHandler(400, 'Invalid request body!');
       }
-
-      await gameModel.create(req.body);
+      await new GameModel().create(req.body);
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
       next(error);
     }
   },
-  update: async (req, res, next) => {
+  updateByID: async (req, res, next) => {
     try {
       const isValidID = validation.validateNumber(req.params.id);
-
       if (!isValidID) {
         throw new ErrorHandler(400, 'Invalid ID provided!');
       }
-
       const isValidBody = validation.validateObjectTypes(
         req.body,
         validationRules,
         false
       );
-
       if (!isValidBody) {
         throw new ErrorHandler(400, 'Invalid request body!');
       }
-
-      await gameModel.updateByID(req.params.id, req.body);
+      await new GameModel().updateByID(req.params.id, req.body);
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
       next(error);
