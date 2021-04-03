@@ -1,4 +1,4 @@
-const { GameModel } = require('../../models');
+const { GameModel, CommonModel } = require('../../models');
 const { ErrorHandler } = require('../../middleware/error');
 const validation = require('../../validation');
 const validationRules = new GameModel().getColTypes();
@@ -6,7 +6,9 @@ const validationRules = new GameModel().getColTypes();
 module.exports = {
   getAll: async (req, res, next) => {
     try {
-      const result = await new GameModel().getAll();
+      const tableName = new GameModel().getTablename();
+      const queryData = { columns: ['*'] };
+      const result = await new CommonModel().get(tableName, queryData);
       return res.status(200).json(result);
     } catch (error) {
       next(error);
@@ -18,7 +20,9 @@ module.exports = {
       if (!isValidID) {
         throw new ErrorHandler(400, 'Invalid ID provided!');
       }
-      const result = await new GameModel().getByID(req.params.id);
+      const tableName = new GameModel().getTablename();
+      const queryData = { columns: ['*'], whereClause: { id: req.params.id } };
+      const result = await new CommonModel().get(tableName, queryData);
       return res.status(200).json(result);
     } catch (error) {
       next(error);
@@ -34,7 +38,9 @@ module.exports = {
       if (!isValidBody) {
         throw new ErrorHandler(400, 'Invalid request body!');
       }
-      await new GameModel().create(req.body);
+      const tableName = new GameModel().getTablename();
+      const queryData = { body: req.body };
+      await new CommonModel().create(tableName, queryData);
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
       next(error);
@@ -54,7 +60,9 @@ module.exports = {
       if (!isValidBody) {
         throw new ErrorHandler(400, 'Invalid request body!');
       }
-      await new GameModel().updateByID(req.params.id, req.body);
+      const tableName = new GameModel().getTablename();
+      const queryData = { whereClause: { id: req.params.id }, body: req.body };
+      await new CommonModel().update(tableName, queryData);
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
       next(error);
