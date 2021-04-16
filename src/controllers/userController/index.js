@@ -1,24 +1,32 @@
-const { UserModel } = require('../../models');
+const { UserModel, CommonModel } = require('../../models');
 const { ErrorHandler } = require('../../middleware/error');
 const { JWT, Bcrypt } = require('../../middleware/auth');
 const validation = require('../../validation');
 const validationRules = new UserModel().getColTypes();
 
 module.exports = {
+  // Get a single user.
   getByID: async (req, res, next) => {
     try {
       const isValidID = validation.validateNumber(req.params.id);
-
       if (!isValidID) {
-        throw new ErrorHandler(400, 'Invalid ID provided!');
+        throw new ErrorHandler(400, 'Invalid request!');
       }
-
-      const result = await new UserModel().getByID(req.params.id);
+      const tableName = new UserModel().getTablename();
+      const queryData = {
+        columns: ['id', 'first_name', 'last_name', 'email'],
+        whereClause: { id: req.params.id },
+      };
+      const [result] = await new CommonModel().get(tableName, queryData);
+      if (!result) {
+        throw new ErrorHandler(400, 'An error occured!');
+      }
       return res.status(200).json(result);
     } catch (error) {
       next(error);
     }
   },
+  // Create new user at signup.
   create: async (req, res, next) => {
     try {
       const isValidBody = validation.validateObjectTypes(
@@ -27,27 +35,37 @@ module.exports = {
         true
       );
       if (!isValidBody) {
-        throw new ErrorHandler(400, 'Invalid request body!');
+        throw new ErrorHandler(400, 'Invalid request!');
       }
-      const isAlreadyUser = await new UserModel().getByEmailNoPass(
-        req.body.email
-      );
-      if (isAlreadyUser) {
-        throw new ErrorHandler(400, 'There is already a user by that email!');
+      const tableName = new UserModel().getTablename();
+      let queryData = {
+        columns: ['*'],
+        whereClause: { email: req.body.email },
+      };
+      const [foundUser] = await new CommonModel().get(tableName, queryData);
+      if (foundUser) {
+        throw new ErrorHandler(400, 'An error occured!');
       }
       const { password } = req.body;
       const hashedPassword = await new Bcrypt().generatePassword(password);
-      await new UserModel().create({ ...req.body, password: hashedPassword });
+      queryData = {
+        body: {
+          ...req.body,
+          password: hashedPassword,
+        },
+      };
+      await new CommonModel().create(tableName, queryData);
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
       next(error);
     }
   },
+  // Update user info NOT including password.
   updateByID: async (req, res, next) => {
     try {
       const isValidID = validation.validateNumber(req.params.id);
       if (!isValidID) {
-        throw new ErrorHandler(400, 'Invalid ID provided!');
+        throw new ErrorHandler(400, 'Invalid request!');
       }
       const isValidBody = validation.validateObjectTypes(
         req.body,
@@ -55,33 +73,49 @@ module.exports = {
         false
       );
       if (!isValidBody) {
-        throw new ErrorHandler(400, 'Invalid request body!');
+        throw new ErrorHandler(400, 'Invalid request!');
       }
-      await new UserModel().updateByID(req.params.id, req.body);
+      const tableName = new UserModel().getTablename();
+      const queryData = { whereClause: { id: req.params.id }, body: req.body };
+      await new CommonModel().update(tableName, queryData);
       return res.status(200).json({ message: 'Success!' });
     } catch (error) {
       next(error);
     }
   },
+  // check if user exists and if the provided password matches password in database.
   login: async (req, res, next) => {
     try {
       const isValidEmail = validation.validateEmail(req.body.email);
       if (!isValidEmail) {
-        throw new ErrorHandler(400, 'Invalid email!');
+        throw new ErrorHandler(400, 'Invalid request!');
       }
-      const foundUser = await new UserModel().getByEmailNoPass(req.body.email);
+      const tableName = new UserModel().getTablename();
+      let queryData = {
+        columns: [
+          'id',
+          'first_name',
+          'last_name',
+          'email',
+          'is_email_verified',
+        ],
+        whereClause: { email: req.body.email },
+      };
+      const [foundUser] = await new CommonModel().get(tableName, queryData);
       if (!foundUser) {
-        throw new ErrorHandler(400, 'User does not exist!');
+        throw new ErrorHandler(400, 'An error occured!');
       }
-      const foundPassword = await new UserModel().getPasswordByEmail(
-        req.body.email
-      );
+      queryData = {
+        columns: ['password'],
+        whereClause: { email: req.body.email },
+      };
+      const [foundPassword] = await new CommonModel().get(tableName, queryData);
       const isCorrectPassword = await new Bcrypt().comparePassword(
         req.body.password,
         foundPassword.password
       );
       if (!isCorrectPassword) {
-        throw new ErrorHandler(400, 'Invalid user!');
+        throw new ErrorHandler(400, 'Invalid request!');
       }
       const jwtToken = new JWT().createToken(foundUser, {
         subject: `${foundUser.id}`,
