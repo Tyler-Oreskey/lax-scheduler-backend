@@ -1,15 +1,15 @@
 const { database } = require('../../config');
 const knex = require('knex')(database);
 
-// class used for common queries
+// class used for common queries.
 class CommonModel {
   constructor() {
-    this.colTypes = null;
     this.tableName = null;
     this.result = null;
     this.queryData = null;
     this.query = null;
   }
+  // Get items from database when provided proper query data.
   get(tableName, queryData) {
     if (!tableName || !queryData) {
       return null;
@@ -26,6 +26,7 @@ class CommonModel {
     this.result = this.query;
     return this.result;
   }
+  // Create row in database given proper query data.
   create(tableName, queryData) {
     if (!tableName || !queryData) {
       return null;
@@ -42,6 +43,7 @@ class CommonModel {
     this.result = this.query;
     return this.result;
   }
+  // Update row in database given proper query data.
   update(tableName, queryData) {
     if (!tableName || !queryData) {
       return null;
