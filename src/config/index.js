@@ -16,4 +16,14 @@ module.exports = {
     secret: process.env.JWT_SECRET,
     exp: process.env.JWT_EXP || '7d',
   },
+  aws: {
+    keys: {
+      accessKeyId: process.env.ACCESS_KEY_ID,
+      secretAccessKey: process.env.SECRET_ACCESS_KEY,
+    },
+    region: process.env.REGION || 'us-east-1',
+    email: {
+      from: process.env.EMAIL_FROM || 'toreskey@gmail.com',
+    },
+  },
 };
